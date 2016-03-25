@@ -34,12 +34,4 @@
         android:layout_below="@+id/motARemplir"
         android:layout_alignParentEnd="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Chat"
-        android:id="@+id/button2"
-        android:onClick="chat"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/button" />
 </RelativeLayout>

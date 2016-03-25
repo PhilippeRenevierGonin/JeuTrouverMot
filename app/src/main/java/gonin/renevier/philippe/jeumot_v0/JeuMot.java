@@ -7,9 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,17 +89,7 @@ public class JeuMot extends AppCompatActivity {
         // mot.setMotAvecTaillePoliceSpecifiee(listeMots[indiceCourant].toUpperCase(), 50);
 
 
-        if (mSocket != null) {
-            JSONObject obj = new JSONObject();
-            try {
-                obj.put("userName", "toto");
-                obj.put("message", listeMots[indiceCourant].toUpperCase());
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            mSocket.emit("chatevent", obj);
-        }
 
     }
 
@@ -117,61 +104,4 @@ public class JeuMot extends AppCompatActivity {
 
 
 
-    /* pour le chat */
-    Socket mSocket;
-
-
-    public void chat(View v)  {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.e("SOCKET", "clic");
-
-
-                try {
-                    // mSocket = IO.socket("http://192.168.1.14:10101");
-                    mSocket = IO.socket("http://192.168.0.103:10101");
-
-
-
-                    mSocket.connect();
-
-
-
-
-
-
-                    Emitter.Listener onNewMessage = new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-
-
-
-                            JSONObject data = (JSONObject) args[0];
-                            String username;
-                            String message;
-                            try {
-                                username = data.getString("userName");
-                                message = data.getString("message");
-
-
-                                Log.e("SOCKET", username+" / "+message);
-                            } catch (JSONException e) {
-                                Log.e("SOCKET", "JSONException");
-
-                                return;
-                            }
-                        }};
-
-                    mSocket.on("chatevent", onNewMessage);
-
-
-            } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
-            }});
-
-    t.run();
-
-    }
 }
