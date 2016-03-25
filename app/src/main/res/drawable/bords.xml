@@ -1,0 +1,16 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="rectangle"
+       android:id="@+id/bords"
+
+        android:background="@color/colorAccent"
+
+    >
+  <corners
+      android:topRightRadius="@dimen/arrondi"
+      android:topLeftRadius="@dimen/arrondi"
+      android:bottomRightRadius="@dimen/arrondi"
+      android:bottomLeftRadius="@dimen/arrondi" />
+  <stroke
+      android:width="2dp"
+      android:color="@android:color/black" />
+</shape>
