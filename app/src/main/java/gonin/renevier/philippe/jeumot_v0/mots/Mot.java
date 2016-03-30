@@ -195,4 +195,17 @@ public class Mot extends Fragment {
     }
 
 
+
+    public void setFournisseur(final FournisseurDeMot fournisseur) {
+        if (container != null) {
+            container.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fournisseur.demarrer();
+                }
+            });
+        }
+    }
+
+
 }

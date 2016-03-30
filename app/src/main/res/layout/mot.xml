@@ -4,7 +4,7 @@
     android:layout_height="match_parent" android:id="@+id/mot"
 
 
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/colorPrimary"
     android:gravity="center_vertical|center_horizontal"
 
     android:tag="interieurMot">

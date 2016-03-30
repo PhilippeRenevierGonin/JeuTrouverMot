@@ -29,9 +29,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/start"
-        android:id="@+id/button"
+        android:id="@+id/suivant"
         android:onClick="demarrerJeux"
         android:layout_below="@+id/motARemplir"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:enabled="false"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/reponse"
+        android:layout_alignTop="@+id/suivant"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/suivant" />
 
 </RelativeLayout>

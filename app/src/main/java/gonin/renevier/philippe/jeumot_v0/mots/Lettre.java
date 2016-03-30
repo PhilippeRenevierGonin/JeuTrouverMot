@@ -36,7 +36,7 @@ public class Lettre extends Fragment {
         lettre = args.getString("lettre");
         etat = args.getBoolean("etat");
         taille = args.getInt("taille");
-        
+
 
         if (saved != null) {
             if (saved.containsKey("etatSauve"))  etat = saved.getBoolean("etatSauve");
