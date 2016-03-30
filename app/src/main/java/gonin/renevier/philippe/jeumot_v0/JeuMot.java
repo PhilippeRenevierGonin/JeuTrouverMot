@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
+import gonin.renevier.philippe.jeumot_v0.decompter.FaireApparaitre;
 import gonin.renevier.philippe.jeumot_v0.ecouter.CompareAMot;
 import gonin.renevier.philippe.jeumot_v0.mots.FournisseurDeMot;
 import gonin.renevier.philippe.jeumot_v0.mots.Mot;
@@ -25,15 +26,21 @@ import gonin.renevier.philippe.jeumot_v0.mots.Mot;
 
 public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
+    final long DELAI = 10000 ;  // 10 sec
+
     Mot mot;
     // String [] listeMots = {"pas vu", "AA", "L3", "L30", "LLL", "worker", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "thread", "android", "POO", "COO", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "héritage", "délégation", "thread", "android", "worker", "timer", "synchronized", "POO", "COO"};
-    String [] listeMots = {"car", "celui-ci", "celui-là", "cependant", "chaque", "presque", "surtout", "trop", "dessous", "depuis", "souvent"};
+    String [] listeMots = {"0123456789", "car", "celui-ci", "celui-là", "cependant", "chaque", "presque", "surtout", "trop", "dessous", "depuis", "souvent"};
     int indiceCourant = -1;
 
 
     EditText reponse ;
     CompareAMot devin;
     View suivant;
+
+
+    FaireApparaitre decompte;
+    long decompteRestant = -1;
 
     InputMethodManager imm ;
 
@@ -55,28 +62,39 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
 
         String motDepart = "Toucher pour démarrer";
+        boolean cache = false;
+        decompteRestant = -1;
+        // long decompte = DELAI;
 
         if (savedInstanceState != null)   {
             indiceCourant = savedInstanceState.getInt("indice");
             if ((indiceCourant >= 0) && (indiceCourant < listeMots.length))  {
                 motDepart = listeMots[indiceCourant];
+                cache = true;
             }
             else indiceCourant = -1;
+
+
+            decompteRestant = savedInstanceState.getLong("decompte", DELAI);
         }
 
-        programmerCalculMot(motDepart);
+        programmerCalculMot(motDepart, cache);
         mot.setFournisseur(this);
 
     }
 
 
-    protected void programmerCalculMot(final String word) {
+    protected void programmerCalculMot(final String word, final boolean cache) {
         mot.post(new Runnable() {
             @Override
             public void run() {
-                mot.setMotAvecCalculDeTaillePolice(word.toUpperCase());
+                mot.setMotAvecCalculDeTaillePolice(word.toUpperCase(), cache);
+
+                // demarrerDecompte(decompte);
             }
         });
+
+
     }
 
 
@@ -93,10 +111,9 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
 
     public void demarrerJeux(View v) {
-        Log.e("MOTS", "demarrerJeux JeuMot");
 
         indiceCourant = (indiceCourant +1)%listeMots.length;
-        mot.setMotAvecCalculDeTaillePolice(listeMots[indiceCourant].toUpperCase());
+        mot.setMotAvecCalculDeTaillePolice(listeMots[indiceCourant].toUpperCase(), true);
         // mot.setMotAvecTaillePoliceSpecifiee(listeMots[indiceCourant].toUpperCase(), 50);
 
         activerReponse();   }
@@ -107,7 +124,15 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         super.onSaveInstanceState(outState);
         outState.putInt("indice", indiceCourant);
         outState.putInt("taille", mot.getDerniereTaille());
+
+        // stop du countdowntimer
+        if (decompte != null) {
+            decompte.cancel();
+            outState.putLong("decompte", decompte.getRemaining());
+        }
+
     }
+
 
 
     @Override
@@ -122,8 +147,11 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
     @Override
     public void motTrouve() {
+        if (decompte != null) decompte.cancel();
         suivant.setEnabled(true);
         reponse.setEnabled(false);
+
+        for(int i = 0; i < listeMots[indiceCourant].length(); i++) mot.montrerLettre(i);
     }
 
     @Override
@@ -131,16 +159,75 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         if ((indiceCourant < 0) || (indiceCourant >= listeMots.length)) {
 
             indiceCourant = 0;
-            mot.setMotAvecCalculDeTaillePolice(listeMots[indiceCourant].toUpperCase());
+            mot.setMotAvecCalculDeTaillePolice(listeMots[indiceCourant].toUpperCase(), true);
 
             activerReponse();
         }
     }
 
+    @Override
+    public void montrerLettre(int indice) {
+        if (mot.estLettreCache(indice) ) mot.montrerLettre(indice);
+        else         Log.e("MOTS AZERTY", "ON MONTRE UNE LETTRE DEJA VISIBLE");
+
+       Log.e("MOTS", "lettre "+indice+" ( "+listeMots[indiceCourant].charAt(indice)+")  il reste... "+decompte.getRemaining());
+    }
+
+    @Override
+    public void motNonTrouve() {
+        suivant.setEnabled(true);
+        reponse.setEnabled(false);
+
+    }
+
+    @Override
+    public boolean estLettreCachee(int i) {
+        boolean resultat = false;
+
+        if (mot != null) resultat = mot.estLettreCache(i);
+
+        return resultat;
+    }
+
+    @Override
+    public void motPret() {
+        Log.e("MOTS", "motPRET ****************");
+        if (decompteRestant >= 0) {
+            mot.post(new Runnable() {
+                @Override
+                public void run() {
+
+                    demarrerDecompte(decompteRestant);
+                }
+            });
+        }
+
+    }
+
     protected void activerReponse() {
+
+        suivant.setEnabled(false);
+
         reponse.setEnabled(true);
         reponse.setText("");
         reponse.requestFocus();
         imm.showSoftInput(reponse, InputMethodManager.SHOW_IMPLICIT);
+
+        decompteRestant = DELAI;
+
+        // demarrerDecompte(DELAI);
+    }
+
+
+    protected void demarrerDecompte(long delai) {
+        if (decompte != null) decompte.cancel();
+
+        if ((indiceCourant >= 0) && (indiceCourant < listeMots.length) ) {
+            int longueur = listeMots[indiceCourant].length() -1; // car le premier onTick est imediat
+            if (longueur <= 0) longueur = 1;
+            decompte = new FaireApparaitre(delai+500L, DELAI/longueur); // +500L pour avoir le dernier onTick (approximatif) car si le delai restant n'est pas suffisant le onTick est "saute"
+            decompte.setFournisseurDeMot(this);
+            decompte.start();
+        }
     }
 }

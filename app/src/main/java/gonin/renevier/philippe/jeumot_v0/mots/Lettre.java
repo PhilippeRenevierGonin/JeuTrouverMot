@@ -23,8 +23,7 @@ public class Lettre extends Fragment {
     String lettre;
     TextView monTexte;
     int taille;
-
-
+    protected Mot monMot;
 
 
     public void onCreate(Bundle saved) {
@@ -38,9 +37,9 @@ public class Lettre extends Fragment {
         taille = args.getInt("taille");
 
 
-        if (saved != null) {
-            if (saved.containsKey("etatSauve"))  etat = saved.getBoolean("etatSauve");
-        }
+//        if (saved != null) {
+//            if (saved.containsKey("etatSauve"))  etat = saved.getBoolean("etatSauve");
+//        }
     }
 
     @Nullable
@@ -53,6 +52,8 @@ public class Lettre extends Fragment {
         setEtat(etat);
 
 
+        if (monMot != null) monMot.lettreChargee();
+
         return v;
     }
 
@@ -63,10 +64,15 @@ public class Lettre extends Fragment {
         if (monTexte != null) {
             if (etat) monTexte.setText(lettre);
             // else  monTexte.setText("\u00a0");
-            else  monTexte.setText("X");
+            else  monTexte.setText(" ");
 
             monTexte.invalidate();
         }
+    }
+
+
+    public boolean getEtat() {
+        return etat;
     }
 
 
@@ -75,9 +81,11 @@ public class Lettre extends Fragment {
         Lettre l = new Lettre();
 
         Bundle args = new Bundle();
-        args.putString("lettre",lettre);
+        args.putString("lettre", lettre);
         args.putBoolean("etat", visible);
         args.putInt("taille", taillepolice);
+
+        // l.etat = visible;
 
         l.setArguments(args);
         return l;
@@ -86,11 +94,16 @@ public class Lettre extends Fragment {
 
 
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//
+//        outState.putBoolean("etatSauve", etat);
+//    }
 
-        outState.putBoolean("etatSauve", etat);
+
+    public void setMot(Mot monMot) {
+        this.monMot = monMot;
     }
 
 

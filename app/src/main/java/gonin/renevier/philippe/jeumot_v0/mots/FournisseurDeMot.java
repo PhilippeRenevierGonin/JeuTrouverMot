@@ -11,4 +11,15 @@ public interface FournisseurDeMot {
 
 
     public void demarrer();
+
+
+    public void montrerLettre(int indice);
+
+
+    public  void motNonTrouve();
+
+    public boolean estLettreCachee(int i);
+
+    public void motPret();
+
 }
