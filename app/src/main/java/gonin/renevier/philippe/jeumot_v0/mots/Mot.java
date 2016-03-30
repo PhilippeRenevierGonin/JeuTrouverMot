@@ -25,12 +25,14 @@ public class Mot extends Fragment {
     LinearLayout container;
     ArrayList<Lettre> lettres;
     int derniereTaille = 50;
-    float density ;
     String dernierMot = "";
+    Typeface monospace ;
 
 
     @Override
     public void onCreate(Bundle saved) {
+        monospace = Typeface.create("monospace", Typeface.NORMAL);
+
         super.onCreate(saved);
         if (saved != null) {
             if (saved.containsKey("mot")) dernierMot = saved.getString("mot");
@@ -42,19 +44,9 @@ public class Mot extends Fragment {
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        Log.e("MOTS", "onCreateView de mot");
-
         View result = inflater.inflate(R.layout.mot, parent, false);
-
-        Log.e("MOTS", "apres inflate");
-
         container = (LinearLayout) result; // .findViewWithTag("interieurMot");
-
-        Log.e("MOTS", "avant return");
-
-        density = getResources().getDisplayMetrics().density;
-
-
+        // density = getResources().getDisplayMetrics().density;
 
         return result;
     }
@@ -105,32 +97,27 @@ public class Mot extends Fragment {
         int max = container.getWidth();
         int maxH = container.getHeight();
 
-        Log.e("MOTS", "taille = " + max + " / " + maxH);
-
         Paint p = new Paint();
-        p.setTypeface(Typeface.create("monospace", Typeface.NORMAL));
-
-        Log.e("MOTS", "density = "+density);
+        p.setTypeface(monospace);
 
 
+        Rect bounds = new Rect();
         while ((length < max) && (height < maxH)){
             derniereTaille++;
             // calcul de la taille de police
             p.setTextSize(derniereTaille);
-            Rect bounds = new Rect();
             p.getTextBounds(s, 0, s.length(), bounds);
             length = bounds.width();
             height = Math.max(p.getFontSpacing(), bounds.height());
-            // Log.e("MOTS", "hauteur = "+height+" / "+maxH+ " (et font -> "+p.getFontSpacing()+") et size = "+ derniereTaille);
-            // Log.e("MOTS", "width = "+length+" / "+max);
+
 
         }
 
         derniereTaille = derniereTaille -1;
-        derniereTaille = (int) (derniereTaille/density);
+//        float ratio = (float) derniereTaille / density;
+//        derniereTaille = (int) (derniereTaille/density);
 
-
-            creerFragments(s, derniereTaille, true);
+        creerFragments(s, derniereTaille, true);
 
         }
 

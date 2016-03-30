@@ -19,7 +19,8 @@ import gonin.renevier.philippe.jeumot_v0.mots.Mot;
 public class JeuMot extends AppCompatActivity {
 
     Mot mot;
-    String [] listeMots = {"pas vu", "AA", "L3", "L30", "LLL", "worker", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "thread", "android", "POO", "COO", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "héritage", "délégation", "thread", "android", "worker", "timer", "synchronized", "POO", "COO"};
+    // String [] listeMots = {"pas vu", "AA", "L3", "L30", "LLL", "worker", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "thread", "android", "POO", "COO", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "héritage", "délégation", "thread", "android", "worker", "timer", "synchronized", "POO", "COO"};
+    String [] listeMots = {"car", "celui-ci", "celui-là", "cependant", "chaque", "presque", "surtout", "trop", "dessous", "depuis", "souvent"};
     int indiceCourant = -1;
 
     @Override

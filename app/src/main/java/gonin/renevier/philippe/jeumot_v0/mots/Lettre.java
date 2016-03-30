@@ -1,9 +1,11 @@
 package gonin.renevier.philippe.jeumot_v0.mots;
 
 import android.app.Fragment;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,9 +36,7 @@ public class Lettre extends Fragment {
         lettre = args.getString("lettre");
         etat = args.getBoolean("etat");
         taille = args.getInt("taille");
-
-        Log.e("SETMOT !!", "******* onCreate "+lettre+" "+taille+" ***************");
-
+        
 
         if (saved != null) {
             if (saved.containsKey("etatSauve"))  etat = saved.getBoolean("etatSauve");
@@ -48,10 +48,7 @@ public class Lettre extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.lettre, container, false);
         monTexte = (TextView) v.findViewWithTag("lettre");
-        monTexte.setTextSize(taille);
-
-
-
+        monTexte.setTextSize(TypedValue.COMPLEX_UNIT_PX, taille);
 
         setEtat(etat);
 
@@ -66,7 +63,7 @@ public class Lettre extends Fragment {
         if (monTexte != null) {
             if (etat) monTexte.setText(lettre);
             // else  monTexte.setText("\u00a0");
-            else  monTexte.setText("XXX");
+            else  monTexte.setText("X");
 
             monTexte.invalidate();
         }

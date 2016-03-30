@@ -7,9 +7,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="XXX"
+        android:text="X"
         android:textStyle="bold"
         android:fontFamily="monospace"
+        android:typeface="monospace"
         android:tag="lettre"
 
 
