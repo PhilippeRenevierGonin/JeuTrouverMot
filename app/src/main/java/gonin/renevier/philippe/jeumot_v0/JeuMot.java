@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -17,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
 
 import gonin.renevier.philippe.jeumot_v0.decompter.FaireApparaitre;
 import gonin.renevier.philippe.jeumot_v0.ecouter.CompareAMot;
@@ -42,7 +44,17 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
     FaireApparaitre decompte;
     long decompteRestant = -1;
 
+
+    TextView score, chrono;
+    DecimalFormat df = new DecimalFormat("00.0");
+
+
+    int nbMotProposé = 0;
+    int nbMotTrouvé = 0;
+
     InputMethodManager imm ;
+
+
 
 
     @Override
@@ -58,6 +70,8 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         mot = (Mot) getFragmentManager().findFragmentById(R.id.motARemplir);
         reponse = (EditText) findViewById(R.id.reponse);
         reponse.addTextChangedListener(devin);
+        score = (TextView) findViewById(R.id.score);
+        chrono = (TextView) findViewById(R.id.tempsrestant);
 
 
 
@@ -76,6 +90,10 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
 
             decompteRestant = savedInstanceState.getLong("decompte", DELAI);
+
+            // autres restaurations
+            nbMotProposé = savedInstanceState.getInt("nbMotProposé", 0);
+            nbMotTrouvé = savedInstanceState.getInt("nbMotTrouvé", 0);
         }
 
         programmerCalculMot(motDepart, cache);
@@ -102,7 +120,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         super.onResume();
 
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
+        raffraichirScore();
         //         android:windowSoftInputMode="stateUnchanged"
         // pour fermer le clavier qui s'ouvre apres rotation
 
@@ -123,7 +141,9 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("indice", indiceCourant);
-        outState.putInt("taille", mot.getDerniereTaille());
+        // outState.putInt("taille", mot.getDerniereTaille());
+        outState.putInt("nbMotProposé", nbMotProposé);
+        outState.putInt("nbMotTrouvé", nbMotTrouvé);
 
         // stop du countdowntimer
         if (decompte != null) {
@@ -155,6 +175,18 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         reponse.setEnabled(false);
 
         for(int i = 0; i < listeMots[indiceCourant].length(); i++) mot.montrerLettre(i);
+
+        chrono.setText("Mot trouvé"); //  en "+df.format((DELAI-decompte.getRemaining())/1000)+"s");
+
+        nbMotTrouvé += 1;
+
+        raffraichirScore();
+    }
+
+    protected void raffraichirScore() {
+        if (nbMotTrouvé > 1) score.setText(""+nbMotTrouvé+" mots trouvés sur "+nbMotProposé);
+        else if (nbMotTrouvé ==  1) score.setText(""+nbMotTrouvé+" mot trouvé sur "+nbMotProposé);
+        else score.setText("aucun mot trouvé sur "+nbMotProposé);
     }
 
     @Override
@@ -173,13 +205,16 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         if (mot.estLettreCache(indice) ) mot.montrerLettre(indice);
         else         Log.e("MOTS AZERTY", "ON MONTRE UNE LETTRE DEJA VISIBLE");
 
-       Log.e("MOTS", "lettre "+indice+" ( "+listeMots[indiceCourant].charAt(indice)+")  il reste... "+decompte.getRemaining());
+       // Log.e("MOTS", "lettre "+indice+" ( "+listeMots[indiceCourant].charAt(indice)+")  il reste... "+decompte.getRemaining());
+        chrono.setText("Temps restant : "+df.format(decompte.getRemaining()/1000)+"s");
     }
 
     @Override
     public void motNonTrouve() {
         suivant.setEnabled(true);
         reponse.setEnabled(false);
+        chrono.setText("Temps imparti écoulé");
+        raffraichirScore();
 
     }
 
@@ -208,6 +243,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
     }
 
     protected void activerReponse() {
+        nbMotProposé += 1;
 
         suivant.setEnabled(false);
 
