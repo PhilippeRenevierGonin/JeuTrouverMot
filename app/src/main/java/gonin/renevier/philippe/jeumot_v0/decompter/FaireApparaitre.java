@@ -11,6 +11,7 @@ import gonin.renevier.philippe.jeumot_v0.mots.FournisseurDeMot;
  * Created by Philippe on 30/03/2016.
  */
 public class FaireApparaitre extends CountDownTimer {
+    protected long delai;
     protected FournisseurDeMot  fournisseur;
 
     ArrayList<Integer> listeIndice ;
@@ -31,6 +32,7 @@ public class FaireApparaitre extends CountDownTimer {
     public FaireApparaitre(long millisInFuture, long countDownInterval) {
         super(millisInFuture, countDownInterval);
         remaining = millisInFuture;
+        delai = countDownInterval;
     }
 
 
@@ -73,5 +75,9 @@ public class FaireApparaitre extends CountDownTimer {
         for(int i  : listeIndice)   fournisseur.montrerLettre(i);  // il devrait en rester une...
         fournisseur.motNonTrouve();
 
+    }
+
+    public long getDelai() {
+        return delai;
     }
 }

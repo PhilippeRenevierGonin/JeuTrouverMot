@@ -30,7 +30,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
     Mot mot;
     // String [] listeMots = {"pas vu", "AA", "L3", "L30", "LLL", "worker", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "thread", "android", "POO", "COO", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "héritage", "délégation", "thread", "android", "worker", "timer", "synchronized", "POO", "COO"};
-    String [] listeMots = {"0123456789", "car", "celui-ci", "celui-là", "cependant", "chaque", "presque", "surtout", "trop", "dessous", "depuis", "souvent"};
+    String [] listeMots = {"car", "celui-ci", "celui-là", "cependant", "chaque", "presque", "surtout", "trop", "dessous", "depuis", "souvent"};
     int indiceCourant = -1;
 
 
@@ -128,7 +128,10 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         // stop du countdowntimer
         if (decompte != null) {
             decompte.cancel();
-            outState.putLong("decompte", decompte.getRemaining());
+            // dans la rotation, on ne connait pas le délai écoulé depuis la dernière version, du coup...
+            // il faudrait retirer l'écart entre deux lettres, et cela montre une lettre tout de suite...
+            // (heureusement la rotation prend du temps) [permet la triche sur les mots les plus petits]
+            outState.putLong("decompte", decompte.getRemaining()-decompte.getDelai());
         }
 
     }
