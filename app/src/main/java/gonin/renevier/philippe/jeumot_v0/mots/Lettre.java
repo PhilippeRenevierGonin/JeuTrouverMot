@@ -36,10 +36,6 @@ public class Lettre extends Fragment {
         etat = args.getBoolean("etat");
         taille = args.getInt("taille");
 
-
-//        if (saved != null) {
-//            if (saved.containsKey("etatSauve"))  etat = saved.getBoolean("etatSauve");
-//        }
     }
 
     @Nullable
@@ -63,7 +59,6 @@ public class Lettre extends Fragment {
 
         if (monTexte != null) {
             if (etat) monTexte.setText(lettre);
-            // else  monTexte.setText("\u00a0");
             else  monTexte.setText(" ");
 
             monTexte.invalidate();
@@ -85,21 +80,9 @@ public class Lettre extends Fragment {
         args.putBoolean("etat", visible);
         args.putInt("taille", taillepolice);
 
-        // l.etat = visible;
-
         l.setArguments(args);
         return l;
     }
-
-
-
-
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        outState.putBoolean("etatSauve", etat);
-//    }
 
 
     public void setMot(Mot monMot) {

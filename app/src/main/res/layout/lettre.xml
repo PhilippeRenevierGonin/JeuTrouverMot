@@ -15,7 +15,9 @@
 
 
         android:padding="0dp"
-        android:gravity="center_vertical|center_horizontal" />
+        android:gravity="center_vertical|center_horizontal"
+
+        android:background="@drawable/bords"/>
 
 </RelativeLayout>
 

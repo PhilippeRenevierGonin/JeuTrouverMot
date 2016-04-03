@@ -2,15 +2,22 @@
        android:shape="rectangle"
        android:id="@+id/bords"
 
-        android:background="@color/colorAccent"
+
 
     >
+
+<!--
   <corners
       android:topRightRadius="@dimen/arrondi"
       android:topLeftRadius="@dimen/arrondi"
       android:bottomRightRadius="@dimen/arrondi"
       android:bottomLeftRadius="@dimen/arrondi" />
+        -->
+
   <stroke
-      android:width="2dp"
-      android:color="@android:color/black" />
+      android:width="0.5dp"
+      android:color="#88888888"
+      />
+
+
 </shape>

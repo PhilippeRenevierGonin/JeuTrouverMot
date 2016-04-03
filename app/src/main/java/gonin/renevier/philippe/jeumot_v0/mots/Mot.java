@@ -48,7 +48,6 @@ public class Mot extends Fragment {
         if (saved != null) {
             if (saved.containsKey("mot")) dernierMot = saved.getString("mot");
             if (saved.containsKey("taille")) derniereTaille = saved.getInt("taille");
-
             if (saved.containsKey("etats")) etatsApresRotation = saved.getBooleanArray("etats");
         }
     }
@@ -58,18 +57,21 @@ public class Mot extends Fragment {
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.mot, parent, false);
-        container = (LinearLayout) result; // .findViewWithTag("interieurMot");
-        // density = getResources().getDisplayMetrics().density;
-
+        container = (LinearLayout) result;
         return result;
     }
 
 
+    /**
+     *   methode pour effacer tous les fragments (pour qu'ils ne soient pas recréer avec des pertes de liens ou d'ordre...)
+     *   mais surtout pour éviter de "violer" les règles de Android sur l'ordre de création des fragments (un fragment qui n'est pas initialiser ne peut pas créer de fragment).
+     */
     public void vider() {
 
         if ((lettres == null) || (lettres.size() == 0)) return;
 
 
+        // sauvegarde de l'état avant de se séparer des fragements "Lettre"
         if ((lettres != null) && (lettres.size() > 0))   {
             etatsAvantRotation = new boolean[lettres.size()];
             for(int i = 0; i < etatsAvantRotation.length; i++){
@@ -77,8 +79,8 @@ public class Mot extends Fragment {
             }
         }
 
+        // on se sépare des Fragements "Lettre"
         if (getFragmentManager() != null) {
-
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             for (int i = lettres.size() - 1; i >= 0; i--) {
                 transaction.remove(lettres.get(i));
@@ -89,6 +91,12 @@ public class Mot extends Fragment {
     }
 
 
+    /**
+     * pour afficher un mot, mais sans calculer la taille de la police de caractère
+     * @param s  : le mot à afficher
+     * @param size : la taille (en pixel) de la police de caractère (forcément monospace)
+     * @param cache : pour indiquer si la lettre est cachée ou non
+     */
     public void setMotAvecTaillePoliceSpecifiee(String s, int size, boolean cache) {
         nbChargees = 0;
 
@@ -103,10 +111,13 @@ public class Mot extends Fragment {
     }
 
 
+    /**
+     * pour afficher un mot avec un calcul de la taille de police la plus adéquate (la plus grande possible sans déborder)
+     * @param s : le mot à afficher
+     * @param cache : pour indiquer si la lettre est cachée ou non
+     */
     public void setMotAvecCalculDeTaillePolice(String s, boolean cache) {
         nbChargees = 0;
-
-        Log.e("MOTS", "mot recu  = "+s);
 
         if ((s == null) || (s.length() == 0)) return;
 
@@ -132,20 +143,21 @@ public class Mot extends Fragment {
             p.getTextBounds(s, 0, s.length(), bounds);
             length = bounds.width();
             height = Math.max(p.getFontSpacing(), bounds.height());
-
-
         }
 
         derniereTaille = derniereTaille -1;
-//        float ratio = (float) derniereTaille / density;
-//        derniereTaille = (int) (derniereTaille/density);
 
         creerFragments(s, derniereTaille, ! cache);
 
         }
 
 
-
+    /**
+     * méthode interne pour créer les Fragments "Lettre", une fois la taille de police décider
+     * @param s
+     * @param size
+     * @param etat
+     */
     private void creerFragments(String s, int size, boolean etat) {
 
         if (getFragmentManager() != null) {
@@ -192,6 +204,10 @@ public class Mot extends Fragment {
     }
 
 
+    /**
+     * pour obenir la dernière taille utilisée
+     * @return la taille utilisée en pixel
+     */
     public int getDerniereTaille() {
         return derniereTaille;
     }
@@ -201,16 +217,16 @@ public class Mot extends Fragment {
     public void onPause()
     {
         super.onPause();
+        // pour éviter des erreurs, car ce fragment ne peut pas créer des fragments n'importe quand
+        // il faut effacer toutes les Lettres
         vider();
     }
 
 
 
+    @Override
     public void onResume() {
         super.onResume();
-
-
-        Log.e("MOT", "On resume : dernierMot = "+ " et  lettres...  " + lettres);
 
         if (lettres != null) {
             if (lettres.size() > 0) {
@@ -229,22 +245,13 @@ public class Mot extends Fragment {
         }
 
 
-//        Log.e("MOT", "On resume : apres tests sur lettres... lettres.. " + lettres);
-//
-//        Log.e("MOT", "On resume : restoring.. " + etatsApresRotation);
-//
-//        if ((lettres != null) && (etatsApresRotation != null) && (etatsApresRotation.length == lettres.size())) {
-//            for(int i = 0; i < etatsApresRotation.length; i++) {
-//                lettres.get(i).setEtat(etatsApresRotation[i]);
-//            }
-//
-//            etatsApresRotation = null; // on ne le fait qu'une fois
-//        }
-
     }
 
 
-
+    /**
+     * pour poster une tâche à effactuer sur le thread graphique, le post est fait à la view du fragment
+     * @param r la tâche (Runnable) à effectuer
+     */
     public void post(Runnable r) {
         if (container != null) container.post(r);
     }
@@ -263,7 +270,10 @@ public class Mot extends Fragment {
     }
 
 
-
+    /**
+     * Pour faire la liaison entre le fragment et l'activité (ou l'objet) qui l'utilise
+     * @param fournisseur l'entité qui utilise ce fragment
+     */
     public void setFournisseur( FournisseurDeMot fournisseur) {
         this.fournisseur = fournisseur;
         if (container != null) {
@@ -277,24 +287,35 @@ public class Mot extends Fragment {
     }
 
 
+    /**
+     * pour rendre une lettre visible
+     * @param indice l'indice de la lettre dans le mot (de 0 à longueur-1)
+     */
     public void montrerLettre(int indice) {
 
         if ((lettres != null) && (lettres.size() > indice) && (indice >= 0)) lettres.get(indice).setEtat(true);
     }
 
+
+    /**
+     * pour savoir si une lettre est cachée
+     * @param i l'indice de la lettre dont on veut savoir si elle est cachée ou non
+     * @return true si la lettre est cachée, false sinon
+     */
     public boolean estLettreCache(int i) {
 
         boolean resultat = false;
 
         if ((lettres != null) && (lettres.size() > i) && (i >= 0))  resultat = ! lettres.get(i).getEtat();
 
-//        Log.e("MOTS", "size = "+lettres.size()+" et i = "+i+" et resultat = "+resultat + " / "+lettres.get(i).getEtat());
-
             return resultat;
     }
 
 
-
+    /**
+     * méthode rappeler par les fragments Lettre pour dire qu'ils sont initialisés.
+     * Cela permet de savoir quand le mot est pret.
+     */
     public void lettreChargee() {
         nbChargees++;
         if ((lettres != null) && (nbChargees >= lettres.size()) && (dernierMot != "") && (nbChargees >= dernierMot.length()) ) {
@@ -302,6 +323,9 @@ public class Mot extends Fragment {
         }
     }
 
+    /**
+     * méthode pour montrer toutes les Lettre
+     */
     public void montrerMot() {
         for(Lettre l : lettres) l.setEtat(true);
     }
