@@ -59,6 +59,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("RETOUR", "onCreate");
         super.onCreate(savedInstanceState);
 
 
@@ -73,6 +74,10 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         score = (TextView) findViewById(R.id.score);
         chrono = (TextView) findViewById(R.id.tempsrestant);
 
+
+        // etat par defaut : on ne peut rien faire
+        suivant.setEnabled(false);
+        reponse.setEnabled(false);
 
 
         String motDepart = "Toucher pour démarrer";
@@ -89,7 +94,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
             else indiceCourant = -1;
 
 
-            decompteRestant = savedInstanceState.getLong("decompte", DELAI);
+            decompteRestant = savedInstanceState.getLong("decompte", -1);
 
             // autres restaurations
             nbMotProposé = savedInstanceState.getInt("nbMotProposé", 0);
@@ -117,6 +122,8 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
 
     protected void onResume() {
+        Log.e("RETOUR", "onResume");
+
         super.onResume();
 
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -151,7 +158,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
             // dans la rotation, on ne connait pas le délai écoulé depuis la dernière version, du coup...
             // il faudrait retirer l'écart entre deux lettres, et cela montre une lettre tout de suite...
             // (heureusement la rotation prend du temps) [permet la triche sur les mots les plus petits]
-            outState.putLong("decompte", decompte.getRemaining()-decompte.getDelai());
+            outState.putLong("decompte", decompte.getRemaining() - decompte.getDelai());
         }
 
     }
@@ -170,17 +177,27 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
     @Override
     public void motTrouve() {
-        if (decompte != null) decompte.cancel();
-        suivant.setEnabled(true);
-        reponse.setEnabled(false);
+        Log.e("RETOUR", "motTrouve **************** "+decompteRestant);
 
-        for(int i = 0; i < listeMots[indiceCourant].length(); i++) mot.montrerLettre(i);
+        if (reponse.isEnabled()) {
+            Log.e("RETOUR", "motTrouve reponse enabled**************** "+decompteRestant);
+            if (decompte != null) decompte.cancel();
+            decompte = null;
 
-        chrono.setText("Mot trouvé"); //  en "+df.format((DELAI-decompte.getRemaining())/1000)+"s");
+            suivant.setEnabled(true);
+            reponse.setEnabled(false);
 
-        nbMotTrouvé += 1;
+            for(int i = 0; i < listeMots[indiceCourant].length(); i++) mot.montrerLettre(i);
 
-        raffraichirScore();
+            chrono.setText("Mot trouvé"); //  en "+df.format((DELAI-decompte.getRemaining())/1000)+"s");
+
+            nbMotTrouvé += 1;
+            decompteRestant = -1;
+
+            raffraichirScore();
+        }
+
+
     }
 
     protected void raffraichirScore() {
@@ -211,9 +228,13 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
     @Override
     public void motNonTrouve() {
+        if (decompte != null) decompte.cancel();
+
         suivant.setEnabled(true);
         reponse.setEnabled(false);
         chrono.setText("Temps imparti écoulé");
+        decompteRestant = -1;
+
         raffraichirScore();
 
     }
@@ -229,7 +250,8 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
     @Override
     public void motPret() {
-        Log.e("MOTS", "motPRET ****************");
+
+        Log.e("MOTS", "motPRET **************** decompteRestant = "+ decompteRestant + " indiceCourant = "+indiceCourant);
         if (decompteRestant >= 0) {
             mot.post(new Runnable() {
                 @Override
@@ -238,6 +260,21 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
                     demarrerDecompte(decompteRestant);
                 }
             });
+        }
+        else {
+            suivant.setEnabled(true);
+            reponse.setEnabled(false);
+
+            Log.e("MOTS", "motPRET **************** mot.getDernierMot() = "+ mot.getDernierMot());
+
+
+            if ((indiceCourant >= 0) && (indiceCourant < listeMots.length) && (mot.getDernierMot() == "") ) {
+                mot.setMotAvecCalculDeTaillePolice(listeMots[indiceCourant], false);
+
+            }
+            else {
+                mot.montrerMot();
+            }
         }
 
     }
@@ -262,6 +299,9 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         if (decompte != null) decompte.cancel();
 
         if ((indiceCourant >= 0) && (indiceCourant < listeMots.length) ) {
+            suivant.setEnabled(false);
+            reponse.setEnabled(true);
+
             int longueur = listeMots[indiceCourant].length() -1; // car le premier onTick est imediat
             if (longueur <= 0) longueur = 1;
             decompte = new FaireApparaitre(delai+500L, DELAI/longueur); // +500L pour avoir le dernier onTick (approximatif) car si le delai restant n'est pas suffisant le onTick est "saute"

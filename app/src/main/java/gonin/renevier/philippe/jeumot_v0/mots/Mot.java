@@ -25,6 +25,11 @@ public class Mot extends Fragment {
     LinearLayout container;
     ArrayList<Lettre> lettres;
     int derniereTaille = 50;
+
+    public String getDernierMot() {
+        return dernierMot;
+    }
+
     String dernierMot = "";
     Typeface monospace ;
 
@@ -205,6 +210,8 @@ public class Mot extends Fragment {
         super.onResume();
 
 
+        Log.e("MOT", "On resume : dernierMot = "+ " et  lettres...  " + lettres);
+
         if (lettres != null) {
             if (lettres.size() > 0) {
                 for(Lettre l : lettres) {
@@ -293,5 +300,9 @@ public class Mot extends Fragment {
         if ((lettres != null) && (nbChargees >= lettres.size()) && (dernierMot != "") && (nbChargees >= dernierMot.length()) ) {
             if (fournisseur != null) fournisseur.motPret();
         }
+    }
+
+    public void montrerMot() {
+        for(Lettre l : lettres) l.setEtat(true);
     }
 }
