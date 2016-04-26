@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         tools:layout="@layout/mot"
-        android:layout_below="@+id/tempsrestant"
+        android:layout_below="@+id/score"
         android:layout_alignParentStart="true" />
 
 
@@ -57,7 +57,17 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/score"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/tempsrestant"
         android:layout_alignParentEnd="true" />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/charger"
+        android:id="@+id/charger"
+        android:onClick="charger"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/suivant" />
 
 </RelativeLayout>

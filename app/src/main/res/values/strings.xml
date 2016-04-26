@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">JeuMot-v0</string>
     <string name="start">suivant</string>
+    <string name="charger">Chosir une liste</string>
 </resources>

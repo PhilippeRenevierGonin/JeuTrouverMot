@@ -2,9 +2,13 @@ package gonin.renevier.philippe.jeumot_v0;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -38,7 +42,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
     EditText reponse ;
     CompareAMot devin;
-    View suivant;
+    View suivant, charger;
 
 
     FaireApparaitre decompte;
@@ -68,17 +72,32 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         devin = new CompareAMot(this);
 
         suivant = findViewById(R.id.suivant);
+        charger = findViewById(R.id.charger);
+
         mot = (Mot) getFragmentManager().findFragmentById(R.id.motARemplir);
+        mot.setFournisseur(this);
+
         reponse = (EditText) findViewById(R.id.reponse);
         reponse.addTextChangedListener(devin);
         score = (TextView) findViewById(R.id.score);
         chrono = (TextView) findViewById(R.id.tempsrestant);
 
 
+
+
+        initMot(savedInstanceState);
+    }
+
+
+    protected void initMot(Bundle savedInstanceState) {
+
+        reponse.setText("");
+        chrono.setText("");
+
         // etat par defaut : on ne peut rien faire
         suivant.setEnabled(false);
         reponse.setEnabled(false);
-
+        charger.setEnabled(true);
 
         String motDepart = "Toucher pour démarrer";
         boolean cache = false;
@@ -86,6 +105,8 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         // long decompte = DELAI;
 
         if (savedInstanceState != null)   {
+            listeMots = savedInstanceState.getStringArray("liste");
+
             indiceCourant = savedInstanceState.getInt("indice");
             if ((indiceCourant >= 0) && (indiceCourant < listeMots.length))  {
                 motDepart = listeMots[indiceCourant];
@@ -102,9 +123,25 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         }
 
         programmerCalculMot(motDepart, cache);
-        mot.setFournisseur(this);
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_jeu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.lancerChargement) {
+            lancementActivitéChoixListe();
+            return true;
+        }
+        return false;
+    }
+
 
 
     protected void programmerCalculMot(final String word, final boolean cache) {
@@ -151,6 +188,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         // outState.putInt("taille", mot.getDerniereTaille());
         outState.putInt("nbMotProposé", nbMotProposé);
         outState.putInt("nbMotTrouvé", nbMotTrouvé);
+        outState.putStringArray("liste", listeMots);
 
         // stop du countdowntimer
         if (decompte != null) {
@@ -186,6 +224,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
             suivant.setEnabled(true);
             reponse.setEnabled(false);
+            charger.setEnabled(true);
 
             for(int i = 0; i < listeMots[indiceCourant].length(); i++) mot.montrerLettre(i);
 
@@ -232,6 +271,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
         suivant.setEnabled(true);
         reponse.setEnabled(false);
+        charger.setEnabled(true);
         chrono.setText("Temps imparti écoulé");
         decompteRestant = -1;
 
@@ -263,6 +303,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         }
         else {
             suivant.setEnabled(true);
+            charger.setEnabled(true);
             reponse.setEnabled(false);
 
             Log.e("MOTS", "motPRET **************** mot.getDernierMot() = "+ mot.getDernierMot());
@@ -283,6 +324,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         nbMotProposé += 1;
 
         suivant.setEnabled(false);
+        charger.setEnabled(false);
 
         reponse.setEnabled(true);
         reponse.setText("");
@@ -300,6 +342,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
         if ((indiceCourant >= 0) && (indiceCourant < listeMots.length) ) {
             suivant.setEnabled(false);
+            charger.setEnabled(false);
             reponse.setEnabled(true);
 
             int longueur = listeMots[indiceCourant].length() -1; // car le premier onTick est imediat
@@ -309,4 +352,49 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
             decompte.start();
         }
     }
+
+
+    public void charger(View view) {
+        lancementActivitéChoixListe();
+    }
+
+
+
+
+    public static final int CODE_CHOIX_LISTE = 2412;
+    public static final String CLEF_NOUVELLE_LISTE = "nouvelle_liste";
+
+    protected void lancementActivitéChoixListe() {
+        Intent choix = new Intent(this, ChoisirListe.class);
+        choix.putExtra(ChoisirListe.CLEF_RETOUR, CLEF_NOUVELLE_LISTE);
+        startActivityForResult(choix, CODE_CHOIX_LISTE);
+    }
+
+    protected void onActivityResult(int requestcode, int resultcode, Intent data) {
+        if (requestcode == CODE_CHOIX_LISTE) {
+            Log.e("MOTS", "resultcode = "+resultcode);
+            if (resultcode == RESULT_OK) {
+                String[] newList = data.getStringArrayExtra(CLEF_NOUVELLE_LISTE);
+                if ((newList != null) && (newList.length > 0)) {
+                    listeMots = newList;
+                    indiceCourant = -1;
+
+                    nbMotProposé = 0;
+                    nbMotTrouvé = 0;
+
+
+                    initMot(null);
+
+                    // il reste à changer le mot afficher
+                    // changer le score
+                    // changer le temps restant
+                    // faire attention au element active / desactive
+
+                    // on passe dans le onResume juste après
+
+                }
+            }
+        }
+    }
+
 }
