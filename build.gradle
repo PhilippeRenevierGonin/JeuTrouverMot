@@ -3,37 +3,31 @@
 buildscript {
     repositories {
         jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0'
-
-        // Android Plugin for Gradle version 1.5.0 does not support Instant Run. Please update to version 2.0.0-rc1
-        /*
-        Error:Gradle version 2.10 is required. Current version is 2.8. If using the gradle wrapper, try editing the distributionUrl in E:\GitEnseignement\POO_ANDROID_JEUMOT\gradle\wrapper\gradle-wrapper.properties to gradle-2.10-all.zip
-<a href="fixGradleVersionInWrapper">Fix Gradle wrapper and re-import project</a><br><a href="openGradleSettings">Gradle settings</a>
-         */
-        /*
-
-You need to change File > Settings > Builds,Execution,Deployment > Build Tools > Gradle >Gradle home path
-
-Or set Use default gradle wrapper and edit Project\gradle\wrapper\gradle-wrapper.properties files field distributionUrl like this
-
-distributionUrl=https\://services.gradle.org/distributions/gradle-2.10-all.zip
-
-
-        */
+        classpath 'com.android.tools.build:gradle:3.6.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
+
+
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+apply plugin: 'android-reporting'

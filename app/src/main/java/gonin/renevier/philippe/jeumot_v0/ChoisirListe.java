@@ -3,7 +3,6 @@ package gonin.renevier.philippe.jeumot_v0;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.DataSetObserver;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +14,8 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.HashMap;
 
 import gonin.renevier.philippe.jeumot_v0.sauvegarde.Sauvegarde;
@@ -22,6 +23,7 @@ import gonin.renevier.philippe.jeumot_v0.sauvegarde.SauvegardeEncapsulee;
 
 public class ChoisirListe extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
+    protected static final String MUSTLOAD = "MUSTLOAD";
     public static String CLEF_RETOUR = "clef_pour_retour";
     protected String _clef_retour;
 
@@ -40,12 +42,18 @@ public class ChoisirListe extends AppCompatActivity implements AdapterView.OnIte
         _clef_retour = getIntent().getStringExtra(CLEF_RETOUR);
         if (_clef_retour == null) _clef_retour = CLEF_RETOUR;
 
-        charger();
+        boolean loadingToDo = true;
+        loadingToDo = getIntent().getBooleanExtra(MUSTLOAD , true ); // si Intent absent, true par défaut
+
+        if (loadingToDo) charger();
     }
 
 
     protected void charger() {
-        Sauvegarde<String> sauvegarde = SauvegardeEncapsulee.getInstance();
+        charger(SauvegardeEncapsulee.getInstance());
+    }
+
+    protected void charger(Sauvegarde<String> sauvegarde) {
 
         listes = sauvegarde.toutCharger(this);
         clefs = new String[listes.size()];
@@ -53,17 +61,24 @@ public class ChoisirListe extends AppCompatActivity implements AdapterView.OnIte
 
 
         String [] tab = clefs;
-        String msg = tab[0];
-        for(int i = 1; i < tab.length; i++) {
-            msg += ", "+tab[i];
+
+        Log.e("JEUMOT",  "tab = "+tab.length);
+
+        if (tab.length > 0) {
+            String msg = tab[0];
+            for(int i = 1; i < tab.length; i++) {
+                msg += ", "+tab[i];
+            }
+            Log.e("JEUMOT", msg+ "clefs = "+clefs.length+" "+clefs[0]);
+
+            liste = (ListView) findViewById(R.id.listView);
+            liste.setAdapter(obtenirAdapter());
+            // liste.invalidate();
+
+            liste.setOnItemClickListener(this);
+
         }
-        Log.e("JEUMOT", msg+ "clefs = "+clefs.length+" "+clefs[0]);
 
-        liste = (ListView) findViewById(R.id.listView);
-        liste.setAdapter(obtenirAdapter());
-        // liste.invalidate();
-
-        liste.setOnItemClickListener(this);
 
     }
 
@@ -115,7 +130,7 @@ public class ChoisirListe extends AppCompatActivity implements AdapterView.OnIte
                 String [] tab = listes.get(clefs[position]);
                 String msg = tab[0];
                 for(int i = 1; i < tab.length; i++) {
-                    msg += ", "+tab[i];
+                    msg += ",\n"+tab[i];
                 }
 
                 txt.setText(msg);
@@ -148,6 +163,13 @@ public class ChoisirListe extends AppCompatActivity implements AdapterView.OnIte
                 return true;
             }
         };
+    }
+
+
+
+    @Override
+    public void onBackPressed() {
+        // back forbidden
     }
 
 

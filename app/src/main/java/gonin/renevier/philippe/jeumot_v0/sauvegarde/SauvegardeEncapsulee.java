@@ -1,6 +1,7 @@
 package gonin.renevier.philippe.jeumot_v0.sauvegarde;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +38,14 @@ public class SauvegardeEncapsulee extends Sauvegarde<String> implements Converti
         HashMap<String, String[]> resultat = new HashMap<String, String[]>();
 
         File dossier = c.getExternalFilesDir(null);
+
+        Log.e("JEUMOT",  "dossier = "+dossier.getAbsolutePath());
+
         String[] listefichiers = dossier.list();
+
+        Log.e("JEUMOT",  "listefichiers = "+listefichiers.length);
+
+
         for (int i = 0; i < listefichiers.length; i++) {
             if (listefichiers[i].endsWith(extension)) {
                 String clef = listefichiers[i].substring(0, listefichiers[i].length()-extension.length());

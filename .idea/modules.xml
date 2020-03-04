@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/POO_ANDROID_JEUMOT.iml" filepath="$PROJECT_DIR$/POO_ANDROID_JEUMOT.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/POO_ANDROID_JEUMOT.iml" filepath="$PROJECT_DIR$/POO_ANDROID_JEUMOT.iml" group="POO_ANDROID_JEUMOT" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="POO_ANDROID_JEUMOT/app" />
     </modules>
   </component>
 </project>

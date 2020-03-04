@@ -26,16 +26,6 @@
         />
         -->
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start"
-        android:id="@+id/suivant"
-        android:onClick="demarrerJeux"
-        android:layout_below="@+id/motARemplir"
-        android:layout_alignParentEnd="true"
-        android:enabled="false"/>
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -70,5 +60,16 @@
         android:onClick="charger"
         android:layout_alignParentBottom="true"
         android:layout_alignEnd="@+id/suivant" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start"
+        android:id="@+id/suivant"
+        android:onClick="demarrerJeux"
+        android:enabled="false"
+        android:layout_below="@+id/motARemplir"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp" />
 
 </RelativeLayout>

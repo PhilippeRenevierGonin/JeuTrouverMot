@@ -1,9 +1,9 @@
 package gonin.renevier.philippe.jeumot_v0;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,11 +34,12 @@ import gonin.renevier.philippe.jeumot_v0.mots.Mot;
 
 public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
-    final long DELAI = 10000 ;  // 10 sec
+    final long DELAI = 40000 ;  // 10 sec
 
     Mot mot;
     // String [] listeMots = {"pas vu", "AA", "L3", "L30", "LLL", "worker", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "thread", "android", "POO", "COO", "nouveaux", "mots", "année", "miage", "programmation", "informatique","java", "L3", "semestre", "graphique", "héritage", "délégation", "thread", "android", "worker", "timer", "synchronized", "POO", "COO"};
-    String [] listeMots = {"car", "celui-ci", "celui-là", "cependant", "chaque", "presque", "surtout", "trop", "dessous", "depuis", "souvent"};
+    // tring [] listeMots = {"car", "celui-ci", "celui-là", "cependant", "chaque", "presque", "surtout", "trop", "dessous", "depuis", "souvent"};
+    String [] listeMots = {"l'idée", "broyer", "consommer", "les arêtes des poissons", "plein", "pleins", "pleine", "pleines", "une pâte", "des bâtonnets", "afin", "parce que", "bientôt", "car", "cela"};
     int indiceCourant = -1;
 
 
@@ -73,6 +76,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
         suivant = findViewById(R.id.suivant);
         charger = findViewById(R.id.charger);
+
 
         mot = (Mot) getFragmentManager().findFragmentById(R.id.motARemplir);
         mot.setFournisseur(this);
@@ -172,7 +176,11 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
 
 
 
-    public void demarrerJeux(View v) {
+        public void demarrerJeux(View v) {
+
+
+            Toast t = Toast.makeText(this, "demo", Toast.LENGTH_LONG);
+            t.show();
 
         indiceCourant = (indiceCourant +1)%listeMots.length;
         mot.setMotAvecCalculDeTaillePolice(listeMots[indiceCourant].toUpperCase(), true);
@@ -368,6 +376,7 @@ public class JeuMot extends AppCompatActivity implements FournisseurDeMot {
         Intent choix = new Intent(this, ChoisirListe.class);
         choix.putExtra(ChoisirListe.CLEF_RETOUR, CLEF_NOUVELLE_LISTE);
         startActivityForResult(choix, CODE_CHOIX_LISTE);
+        // startActivity(choix);
     }
 
     protected void onActivityResult(int requestcode, int resultcode, Intent data) {
